@@ -1,4 +1,6 @@
 simple_node_proxy
 =================
 
-`coffee myproxy.coffee -n`
+1. Edit myproxy.rules.json
+1. `npm install`
+1. `npm start`
