@@ -1,19 +1,34 @@
 http = require 'http'
 url = require 'url'
 fs = require 'fs'
+path = require 'path'
 PORT = 3333
 
 console.log 'http proxy start at post ' + PORT
 
+regExpEscape = (s) ->
+  return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
 http.globalAgent.maxSockets = 16;
 
 http.createServer (req, res) ->
-  pathName = url.parse(req.url).pathname
+  target = req.url
+  console.log(target)
+  #pathName = url.parse(req.url).pathname
   rulers = JSON.parse(fs.readFileSync('./myproxy.rulers.json', 'utf8'))
-  for src, dest of rulers
-    if pathName.indexOf(src) > 0
-      result = fs.readFileSync(dest, 'utf8')
-      res.writeHead(200, {'content-type': 'text/script'})
+  for pattern, dest of rulers
+    console.log 'pattern'
+    console.log pattern
+    regex = new RegExp(regExpEscape(pattern))
+    console.log 'regex'
+    console.log regex
+    if regex.test(target)
+      console.log 'Redirect: ' + target
+      result = fs.readFileSync path.join(__dirname, dest), 'utf8'
+      res.writeHead(200, {
+        'content-type': 'application/json'
+      #'last-modified': 'Tue, 15 Jul 2100 08:08:11 GMT'
+      })
       res.write(result)
       res.end()
       return
@@ -23,12 +38,12 @@ http.createServer (req, res) ->
   res._end = res.end
   res.end = (data) ->
     res._end(data)
-    console.log req.method, res.statusCode, req.url
+  #console.log req.method, res.statusCode, req.url
   _url = url.parse(req.url)
   _host = req.headers.host.split(':')
 
-  req.on 'end', ()->
-    console.log('end')
+  #req.on 'end', ()->
+  #console.log('end')
 
   option =
     host: _host[0]
