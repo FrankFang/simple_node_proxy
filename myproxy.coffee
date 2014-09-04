@@ -13,7 +13,6 @@ http.globalAgent.maxSockets = 16;
 
 http.createServer (req, res) ->
   target = req.url
-  console.log(target)
   #pathName = url.parse(req.url).pathname
   rulers = JSON.parse(fs.readFileSync('./myproxy.rulers.json', 'utf8'))
   for pattern, dest of rulers

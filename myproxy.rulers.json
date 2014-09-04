@@ -2,5 +2,5 @@
     "/api/1/user/login": "./data/login.json",
     "/api/1/user": "./data/user.json",
     "/api/1/upload": "./data/upload.json",
-    "question\/2116869556846604587": "./data/upload.json"
+    "question": "./data/upload.json"
 }
