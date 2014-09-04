@@ -1,0 +1,23 @@
+{
+  "name": "simple_node_proxy",
+  "version": "1.0.0",
+  "description": "simple_node_proxy =================",
+  "main": "myproxy.coffee",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "coffee myproxy.coffee -n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FrankFang/simple_node_proxy.git"
+  },
+  "author": "frankfang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FrankFang/simple_node_proxy/issues"
+  },
+  "homepage": "https://github.com/FrankFang/simple_node_proxy",
+  "dependencies": {
+    "coffee-script": "^1.8.0"
+  }
+}
