@@ -17,13 +17,9 @@ http.createServer (req, res) ->
   #pathName = url.parse(req.url).pathname
   rulers = JSON.parse(fs.readFileSync('./myproxy.rulers.json', 'utf8'))
   for pattern, dest of rulers
-    console.log 'pattern'
-    console.log pattern
     regex = new RegExp(regExpEscape(pattern))
-    console.log 'regex'
-    console.log regex
     if regex.test(target)
-      console.log 'Redirect: ' + target
+      console.log 'Redirect: ' + target + ' to: ' + dest
       result = fs.readFileSync path.join(__dirname, dest), 'utf8'
       res.writeHead(200, {
         'content-type': 'application/json'
