@@ -1,6 +1,3 @@
 {
-    "/api/1/user/login": "./data/login.json",
-    "/api/1/user": "./data/user.json",
-    "/api/1/upload": "./data/upload.json",
-    "question": "./data/upload.json"
+    "/neiyi":"/Users/frank/test/index.html"
 }
