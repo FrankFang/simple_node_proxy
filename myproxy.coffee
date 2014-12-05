@@ -2,6 +2,8 @@ http = require 'http'
 url = require 'url'
 fs = require 'fs'
 path = require 'path'
+#Iconv  = require('iconv').Iconv
+#iconv = new Iconv('GBK', 'UTF-8//TRANSLIT//IGNORE')
 PORT = 3333
 
 console.log 'http proxy start at post ' + PORT
@@ -19,17 +21,26 @@ http.createServer (req, res) ->
     regex = new RegExp(regExpEscape(pattern))
     if regex.test(target)
       console.log 'Redirect: ' + target + ' to: ' + dest
-      result = fs.readFileSync path.join(__dirname, dest), 'utf8'
+      if path.isAbsolute dest
+        pp = dest
+      else
+        pp = path.join(__dirname, dest)
+      result = fs.readFileSync pp, null
+      ext = path.extname(pp)
+      map = {
+        '.js':'application/javascript'
+        '.css':'text/css'
+      }
       res.writeHead(200, {
-        'content-type': 'application/json'
+        'content-type': map[ext] || 'text/html'
       #'last-modified': 'Tue, 15 Jul 2100 08:08:11 GMT'
       })
       res.write(result)
       res.end()
       return
 
-  # replace here
 
+  # replace here
   res._end = res.end
   res.end = (data) ->
     res._end(data)

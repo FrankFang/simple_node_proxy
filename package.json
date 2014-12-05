@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/FrankFang/simple_node_proxy",
   "dependencies": {
-    "coffee-script": "^1.8.0"
+    "coffee-script": "^1.8.0",
+    "iconv": "~2.1.4"
   }
 }
