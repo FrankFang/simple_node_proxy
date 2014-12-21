@@ -21,7 +21,7 @@
   http.globalAgent.maxSockets = 16;
 
   http.createServer(function(req, res) {
-    var clientRequest, dest, ext, map, option, pattern, pp, regex, result, rulers, target, _host, _ref, _url;
+    var clientRequest, dest, ext, map, option, pattern, regex, resolvedPath, result, rulers, target, _host, _ref, _url;
     target = req.url;
     rulers = JSON.parse(fs.readFileSync('./myproxy.rulers.json', 'utf8'));
     for (pattern in rulers) {
@@ -30,15 +30,16 @@
       if (regex.test(target)) {
         console.log('Redirect: ' + target + ' to: ' + dest);
         if (path.isAbsolute(dest)) {
-          pp = dest;
+          resolvedPath = dest;
         } else {
-          pp = path.join(__dirname, dest);
+          resolvedPath = path.join(__dirname, dest);
         }
-        result = fs.readFileSync(pp, null);
-        ext = path.extname(pp);
+        result = fs.readFileSync(resolvedPath, null);
+        ext = path.extname(resolvedPath);
         map = {
           '.js': 'application/javascript',
-          '.css': 'text/css'
+          '.css': 'text/css',
+          '.xml': 'application/xml'
         };
         res.writeHead(200, {
           'content-type': map[ext] || 'text/html'
@@ -58,7 +59,7 @@
       host: _host[0],
       port: Number((_ref = _host[1]) != null ? _ref : '80'),
       path: _url.pathname + (_url.search || ''),
-      methed: req.method,
+      method: req.method,
       headers: req.headers
     };
     clientRequest = http.request(option);
