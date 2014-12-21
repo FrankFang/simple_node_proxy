@@ -2,79 +2,75 @@ http = require 'http'
 url = require 'url'
 fs = require 'fs'
 path = require 'path'
-#Iconv  = require('iconv').Iconv
-#iconv = new Iconv('GBK', 'UTF-8//TRANSLIT//IGNORE')
 PORT = 3333
 
 console.log 'http proxy start at post ' + PORT
 
 regExpEscape = (s) ->
-  return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 
 http.globalAgent.maxSockets = 16;
 
 http.createServer (req, res) ->
-  target = req.url
-  #pathName = url.parse(req.url).pathname
-  rulers = JSON.parse(fs.readFileSync('./myproxy.rulers.json', 'utf8'))
-  for pattern, dest of rulers
-    regex = new RegExp(regExpEscape(pattern))
-    if regex.test(target)
-      console.log 'Redirect: ' + target + ' to: ' + dest
-      if path.isAbsolute dest
-        pp = dest
-      else
-        pp = path.join(__dirname, dest)
-      result = fs.readFileSync pp, null
-      ext = path.extname(pp)
-      map = {
-        '.js':'application/javascript'
-        '.css':'text/css'
-      }
-      res.writeHead(200, {
-        'content-type': map[ext] || 'text/html'
-      #'last-modified': 'Tue, 15 Jul 2100 08:08:11 GMT'
-      })
-      res.write(result)
-      res.end()
-      return
+    target = req.url
+    rulers = JSON.parse(fs.readFileSync('./myproxy.rulers.json', 'utf8'))
+    for pattern, dest of rulers
+        regex = new RegExp(regExpEscape(pattern))
+        if regex.test(target)
+            console.log 'Redirect: ' + target + ' to: ' + dest
+            if path.isAbsolute dest
+                resolvedPath = dest
+            else
+                resolvedPath = path.join(__dirname, dest)
+            result = fs.readFileSync resolvedPath, null
+            ext = path.extname(resolvedPath)
+            map = {
+                '.js': 'application/javascript'
+                '.css': 'text/css',
+                '.xml': 'application/xml'
+            }
+            res.writeHead(200, {
+                'content-type': map[ext] || 'text/html'
+            #'last-modified': 'Tue, 15 Jul 2100 08:08:11 GMT'
+            })
+            res.write(result)
+            res.end()
+            return
 
 
-  # replace here
-  res._end = res.end
-  res.end = (data) ->
-    res._end(data)
-  #console.log req.method, res.statusCode, req.url
-  _url = url.parse(req.url)
-  _host = req.headers.host.split(':')
+    # replace here
+    res._end = res.end
+    res.end = (data) ->
+        res._end(data)
 
-  #req.on 'end', ()->
-  #console.log('end')
+    _url = url.parse(req.url)
+    _host = req.headers.host.split(':')
 
-  option =
-    host: _host[0]
-    port: Number(_host[1] ? '80')
-    path: _url.pathname + (_url.search or '')
-    methed: req.method
-    headers: req.headers
 
-  clientRequest = http.request(option)
-  req.on 'data', (chunk)->
-    clientRequest.write(chunk)
+    option =
+        host: _host[0]
+        port: Number(_host[1] ? '80')
+        path: _url.pathname + (_url.search or '')
+        method: req.method
+        headers: req.headers
 
-  req.on 'end', ()->
-    clientRequest.end()
+    clientRequest = http.request(option)
+    req.on 'data', (chunk)->
+        clientRequest.write(chunk)
 
-  clientRequest.on 'response', (response)->
-    hs = response.headers
-    res.writeHead(response.statusCode, hs)
-    response.on 'data', (chunk)->
-      res.write(chunk)
-    response.on 'end', ()->
-      res.end()
+    req.on 'end', ()->
+        clientRequest.end()
 
-  clientRequest.on 'error', (error)->
-    console.log(error)
-    res.end()
+    clientRequest.on 'response', (response)->
+        hs = response.headers
+        res.writeHead(response.statusCode, hs)
+        response.on 'data', (chunk)->
+            res.write(chunk)
+        response.on 'end', ()->
+            res.end()
+
+    clientRequest.on 'error', (error)->
+        console.log(error)
+        res.end()
 
 .listen(PORT)
