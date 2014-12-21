@@ -12,12 +12,18 @@ regExpEscape = (s) ->
 http.globalAgent.maxSockets = 16;
 
 http.createServer (req, res) ->
+
     target = req.url
     rulers = JSON.parse(fs.readFileSync('./myproxy.rulers.json', 'utf8'))
+
     for pattern, dest of rulers
+
         regex = new RegExp(regExpEscape(pattern))
+
         if regex.test(target)
+
             console.log 'Redirect: ' + target + ' to: ' + dest
+
             if path.isAbsolute dest
                 resolvedPath = dest
             else
@@ -38,11 +44,6 @@ http.createServer (req, res) ->
             return
 
 
-    # replace here
-    res._end = res.end
-    res.end = (data) ->
-        res._end(data)
-
     _url = url.parse(req.url)
     _host = req.headers.host.split(':')
 
@@ -55,6 +56,7 @@ http.createServer (req, res) ->
         headers: req.headers
 
     clientRequest = http.request(option)
+
     req.on 'data', (chunk)->
         clientRequest.write(chunk)
 
