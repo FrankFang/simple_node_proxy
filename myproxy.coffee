@@ -7,9 +7,9 @@ PORT = 3333
 console.log 'http proxy start at post ' + PORT
 
 regExpEscape = (s) ->
-    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
 
-http.globalAgent.maxSockets = 16;
+http.globalAgent.maxSockets = 16
 
 http.createServer (req, res) ->
 
@@ -24,10 +24,7 @@ http.createServer (req, res) ->
 
             console.log 'Redirect: ' + target + ' to: ' + dest
 
-            if path.isAbsolute dest
-                resolvedPath = dest
-            else
-                resolvedPath = path.join(__dirname, dest)
+            resolvedPath = dest
             result = fs.readFileSync resolvedPath, null
             ext = path.extname(resolvedPath)
             map = {
@@ -46,6 +43,7 @@ http.createServer (req, res) ->
 
     _url = url.parse(req.url)
     _host = req.headers.host.split(':')
+
 
 
     option =
@@ -72,7 +70,7 @@ http.createServer (req, res) ->
             res.end()
 
     clientRequest.on 'error', (error)->
-        console.log(error)
+        console.log error
         res.end()
 
 .listen(PORT)
