@@ -5,7 +5,7 @@
   "main": "myproxy.coffee",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "coffee myproxy.coffee -n"
+    "start": "coffee myproxy.coffee"
   },
   "repository": {
     "type": "git",
