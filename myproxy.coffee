@@ -17,8 +17,12 @@ http.createServer (req, res) ->
     rulers = JSON.parse(fs.readFileSync('./myproxy.rulers.json', 'utf8'))
 
     for pattern, dest of rulers
+        hold = false
 
         regex = new RegExp(regExpEscape(pattern))
+
+        if target.indexOf('jquery-latest.js') >= 0
+            hold = true
 
         if regex.test(target)
 
@@ -32,12 +36,24 @@ http.createServer (req, res) ->
                 '.css': 'text/css',
                 '.xml': 'application/xml'
             }
-            res.writeHead(200, {
-                'content-type': map[ext] || 'text/html'
-            #'last-modified': 'Tue, 15 Jul 2100 08:08:11 GMT'
-            })
-            res.write(result)
-            res.end()
+            if hold
+                f = ()->
+                    console.log 'here'
+                    res.writeHead(200, {
+                        'content-type': map[ext] || 'text/html'
+                    #'last-modified': 'Tue, 15 Jul 2100 08:08:11 GMT'
+                    })
+                    res.write(result)
+                    res.end()
+
+                setTimeout(f , 10000)
+            else
+                res.writeHead(200, {
+                    'content-type': map[ext] || 'text/html'
+                #'last-modified': 'Tue, 15 Jul 2100 08:08:11 GMT'
+                })
+                res.write(result)
+                res.end()
             return
 
 
@@ -52,6 +68,11 @@ http.createServer (req, res) ->
         path: _url.pathname + (_url.search or '')
         method: req.method
         headers: req.headers
+
+    if option.host is 'channel.crm.1688.com'
+        option.port = 5100
+    else if option.host is 'assets.1688.com'
+        option.port = 2333
 
     clientRequest = http.request(option)
 
